@@ -72,6 +72,9 @@ class FunctionPlotter(QMainWindow):
         self.function = self.function_input.text()
         self.x_range = self.x_range_input.text()
 
+        # replace ** with ^ for convenience
+        self.function = self.function.replace("^", "**")
+
         # Plot the function
         x = np.linspace(*map(float, self.x_range.split(",")))
         y = eval(self.function)
