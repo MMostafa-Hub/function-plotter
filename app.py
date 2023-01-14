@@ -13,6 +13,24 @@ from PySide2.QtCore import Qt
 import matplotlib.pyplot as plt
 import numpy as np
 
+# importing all trigonometric, exponential, logarithmic, and hyperbolic functions
+from numpy import (
+    sin,
+    cos,
+    tan,
+    exp,
+    log,
+    log10,
+    sqrt,
+    pi,
+    e,
+    sinh,
+    cosh,
+    tanh,
+    ceil,
+    floor,
+)
+
 
 class FunctionPlotter(QMainWindow):
     def __init__(self):
