@@ -46,6 +46,22 @@ class FunctionPlotter(QMainWindow):
         central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
 
+        # connecting the push button signal to the plot slot
+        self.plot_button.clicked.connect(self.plot)
+
+    def plot(self):
+        # Get user input for function and range
+        self.function = self.function_input.text()
+        self.x_range = self.x_range_input.text()
+
+        # Plot the function
+        x = np.linspace(*map(float, self.x_range.split(",")))
+        y = eval(self.function)
+
+        plt.plot(x, y)
+        plt.grid()
+        plt.show()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
