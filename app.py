@@ -8,8 +8,9 @@ from PySide2.QtWidgets import (
     QHBoxLayout,
     QPushButton,
     QWidget,
-    QMessageBox,
 )
+from PySide2.QtGui import QIcon
+from PySide2.QtCore import Qt
 import re
 from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg as FigureCanvas,
@@ -36,13 +37,13 @@ from numpy import (
     floor,
 )
 
-MATH_FUNCTIONS = "sin|cos|tan|exp|log|log10|sqrt|pi|e|sinh|cosh|tanh|ceil|floor"
-
 
 class FunctionPlotter(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Function Plotter")
+        self.setWindowIcon(QIcon("./icon.png"))
+        self.setFixedSize(800, 600)
 
         # text input fields and plot button
         self.function_input = QLineEdit()
@@ -156,16 +157,16 @@ class FunctionPlotter(QMainWindow):
             return False
 
         # check it it is a valid mathematical function
-            try:
+        try:
             if self.function_input.text().strip().find("**") != -1:
                 raise e
             x = np.linspace(*map(float, self.x_range))
             eval(self.function)
-            except Exception as e:
-                self.error_label.setText(
+        except Exception as e:
+            self.error_label.setText(
                 f"Invalid Mathematical function: The input '{self.function}' in function input is not valid, please enter a valid input"
-                )
-                self.error_label.show()
+            )
+            self.error_label.show()
             return False
 
         self.error_label.hide()
@@ -173,7 +174,7 @@ class FunctionPlotter(QMainWindow):
         return True
 
     def validate_range(self):
-        self.function = self.function_input.text().strip()
+        # Get user input for range
         self.x_range = [
             self.min_x_input.text().strip(),
             self.max_x_input.text().strip(),
@@ -217,6 +218,8 @@ class FunctionPlotter(QMainWindow):
 
         self.figure.clear()
         ax = self.figure.add_subplot(111)
+
+        # add the latex form of the function to the plot
         ax.plot(x, y, label=rf"${self.function_input.text()}$")
         ax.legend()
         ax.grid()
