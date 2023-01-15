@@ -66,18 +66,35 @@ class FunctionPlotter(QMainWindow):
 
         # Range form
         input_layout.addWidget(QLabel("Range: ["))
-        self.min_x_input.setPlaceholderText("-10")
+        self.min_x_input.setText("-10")
         input_layout.addWidget(self.min_x_input)
         input_layout.addWidget(QLabel(", "))
-        self.max_x_input.setPlaceholderText("10")
+        self.max_x_input.setText("10")
         input_layout.addWidget(self.max_x_input)
         input_layout.addWidget(QLabel("]"))
 
+        # Adding the Plot button to the input layout
         input_layout.addWidget(self.plot_button)
 
         # Input Widget
         input_widget = QWidget()
         input_widget.setLayout(input_layout)
+
+        # bottom layout for the form and the error message
+        bottom_layout = QVBoxLayout()
+
+        # Add the input widget to the bottom layout
+        bottom_layout.addWidget(input_widget)
+
+        # Add error label to the bottom layout
+        self.error_label = QLabel()
+        self.error_label.setStyleSheet("color: red")
+        self.error_label.hide()
+        bottom_layout.addWidget(self.error_label)
+
+        # Bottom Widget
+        bottom_widget = QWidget()
+        bottom_widget.setLayout(bottom_layout)
 
         # connecting the push button signal to the plot slot
         self.plot_button.clicked.connect(self.plot)
@@ -103,26 +120,52 @@ class FunctionPlotter(QMainWindow):
         central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
 
-    def validate_input(self, regular_exp, line_edit, line_edit_name):
-        text = line_edit.text().strip()
+    def validate_input(self, regular_exp, line_edit, line_edit_name, message=None):
+        if message:
+            self.error_label.setText(f"Invalid input: {message} in {line_edit_name}")
+            self.error_label.show()
+            return
 
+        text = line_edit.text().strip()
         # Check if input value is empty
         if not text:
-            print(text)
-            QMessageBox.warning(
-                self,
-                "Empty Value",
-                f"please enter a valid input in {line_edit_name} ",
+            self.error_label.setText(
+                f"Empty Input: please enter a valid input in {line_edit_name} "
             )
+            self.error_label.show()
+            return
+
         # validate with regular  expression
         invalid_input = re.sub(regular_exp, "", text)
 
         if invalid_input:
-            QMessageBox.warning(
-                self,
-                "Invalid Input",
-                f"The input '{invalid_input}' in {line_edit_name} is not valid, please enter a valid input",
+            self.error_label.setText(
+                f"Invalid Input: The input '{invalid_input}' in {line_edit_name} is not valid, please enter a valid input",
             )
+            self.error_label.show()
+            return
+
+        # check it it is a valid mathematical function
+        if line_edit_name == "Function Input":
+            try:
+                x = np.linspace(
+                    *map(
+                        float,
+                        [
+                            self.min_x_input.text().strip(),
+                            self.max_x_input.text().strip(),
+                        ],
+                    )
+                )
+                eval(line_edit.text().replace("^", "**"))
+            except Exception as e:
+                self.error_label.setText(
+                    f"Invalid Mathematical function: The input '{text}' in {line_edit_name} is not valid, "
+            )
+                self.error_label.show()
+                return
+
+        self.error_label.hide()
 
     def plot(self):
         # Check Input Validation
