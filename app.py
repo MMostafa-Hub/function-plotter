@@ -109,6 +109,7 @@ class FunctionPlotter(QMainWindow):
 
         # Main Layout for the form and the plot
         main_layout = QVBoxLayout()
+
         # Add navigation toolbar
         self.toolbar = NavigationToolbar2QT(self.canvas, self)
         main_layout.addWidget(self.toolbar)
@@ -125,72 +126,86 @@ class FunctionPlotter(QMainWindow):
         if event.key() == Qt.Key_Return:
             self.plot()
 
-        text = line_edit.text().strip()
+    def validate_input(self):
+        # we Validate the range first, if it is valid we validate the function
+        if not self.validate_range():
+            return False
+
+        # Get user input for range
+        self.raw_function = self.function_input.text().strip()
+
+        # replace ** with ^ for convenience
+        self.function = self.raw_function.replace("^", "**")
+
         # Check if input value is empty
-        if not text:
+        if not self.function:
             self.error_label.setText(
-                f"Empty Input: please enter a valid input in {line_edit_name} "
+                f"Empty Input: The input in Function Input is empty, please enter a valid input",
             )
             self.error_label.show()
-            return
+            return False
 
         # validate with regular  expression
-        invalid_input = re.sub(regular_exp, "", text)
+        invalid_input = re.sub(self.function_re, "", self.raw_function)
 
         if invalid_input:
             self.error_label.setText(
-                f"Invalid Input: The input '{invalid_input}' in {line_edit_name} is not valid, please enter a valid input",
+                f"Invalid Input: The input '{invalid_input}' in function input is not valid, please enter a valid input",
             )
             self.error_label.show()
-            return
+            return False
 
         # check it it is a valid mathematical function
-        if line_edit_name == "Function Input":
             try:
-                x = np.linspace(
-                    *map(
-                        float,
-                        [
-                            self.min_x_input.text().strip(),
-                            self.max_x_input.text().strip(),
-                        ],
-                    )
-                )
-                eval(line_edit.text().replace("^", "**"))
+            if self.function_input.text().strip().find("**") != -1:
+                raise e
+            x = np.linspace(*map(float, self.x_range))
+            eval(self.function)
             except Exception as e:
                 self.error_label.setText(
-                    f"Invalid Mathematical function: The input '{text}' in {line_edit_name} is not valid, "
+                f"Invalid Mathematical function: The input '{self.function}' in function input is not valid, please enter a valid input"
                 )
                 self.error_label.show()
-                return
+            return False
 
         self.error_label.hide()
 
-    def plot(self):
-        # Check Input Validation
-        self.validate_input(self.range_re, self.max_x_input, "Max Input")
-        self.validate_input(self.range_re, self.min_x_input, "Min Input")
-        self.validate_input(self.function_re, self.function_input, "Function Input")
+        return True
 
-        if float(self.min_x_input.text().strip()) >= float(
-            self.max_x_input.text().strip()
-        ):
-            self.validate_input(
-                None, None, "Range Input", "Min value must be less than Max value"
-            )
-
-        if self.error_label.isVisible():
-            return
-
-        # Get user input for function and range
+    def validate_range(self):
         self.function = self.function_input.text().strip()
         self.x_range = [
             self.min_x_input.text().strip(),
             self.max_x_input.text().strip(),
         ]
 
-        # replace ** with ^ for convenience
-        self.function = self.function.replace("^", "**")
+        # Check if input value is empty
+        if not self.x_range[0] or not self.x_range[1]:
+            self.error_label.setText(
+                f"Empty Input: The input in Range Input is empty, please enter a valid input",
+            )
+            self.error_label.show()
+            return False
+        # Check if the range is valid
+        try:
+            if float(self.x_range[0]) >= float(self.x_range[1]):
+                self.error_label.setText("Invalid Range: Min X must be less than Max X")
+                self.error_label.show()
+                return False
+
+            # check if the input is a valid number
+        except Exception as e:
+            self.error_label.setText(
+                f"Invalid Input: The input in Range is not valid, please enter a valid input",
+            )
+            self.error_label.show()
+            return False
+        return True
+
+    def plot(self):
+        # Check Input Validation
+        if not self.validate_input():
+            return
 
         # Plot the function
         x = np.linspace(*map(float, self.x_range))
