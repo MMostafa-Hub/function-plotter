@@ -123,8 +123,11 @@ class FunctionPlotter(QMainWindow):
         self.validate_input(self.function_re, self.function_input, "Function Input")
 
         # Get user input for function and range
-        self.function = self.function_input.text()
-        self.x_range = [self.min_x_input.text(), self.max_x_input.text()]
+        self.function = self.function_input.text().strip()
+        self.x_range = [
+            self.min_x_input.text().strip(),
+            self.max_x_input.text().strip(),
+        ]
 
         # replace ** with ^ for convenience
         self.function = self.function.replace("^", "**")
@@ -139,7 +142,8 @@ class FunctionPlotter(QMainWindow):
 
         self.figure.clear()
         ax = self.figure.add_subplot(111)
-        ax.plot(x, y)
+        ax.plot(x, y, label=rf"${self.function_input.text()}$")
+        ax.legend()
         self.canvas.draw()
 
 
