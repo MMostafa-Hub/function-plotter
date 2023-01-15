@@ -33,6 +33,8 @@ from numpy import (
     floor,
 )
 
+MATH_FUNCTIONS = "sin|cos|tan|exp|log|log10|sqrt|pi|e|sinh|cosh|tanh|ceil|floor"
+
 
 class FunctionPlotter(QMainWindow):
     def __init__(self):
@@ -47,7 +49,7 @@ class FunctionPlotter(QMainWindow):
 
         # regular expression to validate the input values
         self.range_re = r"^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$"
-        self.function_re = r"^[+\-*/\^%()\s0-9x\.eE]*$"
+        self.function_re = r"^[+\-*/\^%()\s0-9xX\.eE|" + MATH_FUNCTIONS + "]*$"
 
         # Input Layout for the form
         input_layout = QHBoxLayout()
