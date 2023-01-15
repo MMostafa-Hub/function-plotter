@@ -49,3 +49,5 @@ You can install these using pip:
     -   Input: "sin(x)"
     -   Range: [0, 2*pi]
 	<img title="working example 2" alt="Alt text" src="/Examples/wrong2.JPG">
+## License
+Function Plotter is released under the [MIT License](https://opensource.org/licenses/MIT). This means that you are free to use, modify, and distribute the software as long as you include the original copyright and license notice in any copies.
