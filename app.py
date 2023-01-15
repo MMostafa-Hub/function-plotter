@@ -120,11 +120,10 @@ class FunctionPlotter(QMainWindow):
         central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
 
-    def validate_input(self, regular_exp, line_edit, line_edit_name, message=None):
-        if message:
-            self.error_label.setText(f"Invalid input: {message} in {line_edit_name}")
-            self.error_label.show()
-            return
+    # if the user presses the enter key, we plot the function
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Return:
+            self.plot()
 
         text = line_edit.text().strip()
         # Check if input value is empty
