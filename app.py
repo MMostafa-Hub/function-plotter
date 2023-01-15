@@ -8,8 +8,9 @@ from PySide2.QtWidgets import (
     QHBoxLayout,
     QPushButton,
     QWidget,
+    QMessageBox,
 )
-from PySide2.QtCore import Qt
+import re
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
 import numpy as np
@@ -43,6 +44,10 @@ class FunctionPlotter(QMainWindow):
         self.min_x_input = QLineEdit()
         self.max_x_input = QLineEdit()
         self.plot_button = QPushButton("Plot")
+
+        # regular expression to validate the input values
+        self.range_re = r"^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$"
+        self.function_re = r"^[+\-*/\^%()\s0-9x\.eE]*$"
 
         # Input Layout for the form
         input_layout = QHBoxLayout()
@@ -88,7 +93,33 @@ class FunctionPlotter(QMainWindow):
         central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
 
+    def validate_input(self, regular_exp, line_edit, line_edit_name):
+        text = line_edit.text().strip()
+
+        # Check if input value is empty
+        if not text:
+            print(text)
+            QMessageBox.warning(
+                self,
+                "Empty Value",
+                f"please enter a valid input in {line_edit_name} ",
+            )
+        # validate with regular  expression
+        invalid_input = re.sub(regular_exp, "", text)
+
+        if invalid_input:
+            QMessageBox.warning(
+                self,
+                "Invalid Input",
+                f"The input '{invalid_input}' in {line_edit_name} is not valid, please enter a valid input",
+            )
+
     def plot(self):
+        # Check Input Validation
+        self.validate_input(self.range_re, self.max_x_input, "Max Input")
+        self.validate_input(self.range_re, self.min_x_input, "Min Input")
+        self.validate_input(self.function_re, self.function_input, "Function Input")
+
         # Get user input for function and range
         self.function = self.function_input.text()
         self.x_range = [self.min_x_input.text(), self.max_x_input.text()]
