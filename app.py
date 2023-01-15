@@ -40,7 +40,8 @@ class FunctionPlotter(QMainWindow):
 
         # text input fields and plot button
         self.function_input = QLineEdit()
-        self.x_range_input = QLineEdit()
+        self.min_x_input = QLineEdit()
+        self.max_x_input = QLineEdit()
         self.plot_button = QPushButton("Plot")
 
         # Input Layout for the form
@@ -52,9 +53,14 @@ class FunctionPlotter(QMainWindow):
         input_layout.addWidget(self.function_input)
 
         # Range form
-        input_layout.addWidget(QLabel("Range:"))
-        self.x_range_input.setPlaceholderText("e.g. -10, 10")
-        input_layout.addWidget(self.x_range_input)
+        input_layout.addWidget(QLabel("Range: ["))
+        self.min_x_input.setPlaceholderText("-10")
+        input_layout.addWidget(self.min_x_input)
+        input_layout.addWidget(QLabel(", "))
+        self.max_x_input.setPlaceholderText("10")
+        input_layout.addWidget(self.max_x_input)
+        input_layout.addWidget(QLabel("]"))
+
         input_layout.addWidget(self.plot_button)
 
         # Input Widget
@@ -85,13 +91,13 @@ class FunctionPlotter(QMainWindow):
     def plot(self):
         # Get user input for function and range
         self.function = self.function_input.text()
-        self.x_range = self.x_range_input.text()
+        self.x_range = [self.min_x_input.text(), self.max_x_input.text()]
 
         # replace ** with ^ for convenience
         self.function = self.function.replace("^", "**")
 
         # Plot the function
-        x = np.linspace(*map(float, self.x_range.split(",")))
+        x = np.linspace(*map(float, self.x_range))
         y = eval(self.function)
 
         self.figure.clear()
