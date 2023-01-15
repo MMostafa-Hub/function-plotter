@@ -100,6 +100,10 @@ class FunctionPlotter(QMainWindow):
         x = np.linspace(*map(float, self.x_range))
         y = eval(self.function)
 
+        # Handling the case where y is a scaler value
+        if not isinstance(y, np.ndarray):
+            y = np.array([y] * len(x))
+
         self.figure.clear()
         ax = self.figure.add_subplot(111)
         ax.plot(x, y)
