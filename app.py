@@ -11,7 +11,10 @@ from PySide2.QtWidgets import (
     QMessageBox,
 )
 import re
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import (
+    FigureCanvasQTAgg as FigureCanvas,
+    NavigationToolbar2QT,
+)
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -44,7 +47,9 @@ class FunctionPlotter(QMainWindow):
         # text input fields and plot button
         self.function_input = QLineEdit()
         self.min_x_input = QLineEdit()
+        self.min_x_input.setFixedWidth(50)
         self.max_x_input = QLineEdit()
+        self.max_x_input.setFixedWidth(50)
         self.plot_button = QPushButton("Plot")
 
         # regular expression to validate the input values
@@ -87,6 +92,9 @@ class FunctionPlotter(QMainWindow):
 
         # Main Layout for the form and the plot
         main_layout = QVBoxLayout()
+        # Add navigation toolbar
+        self.toolbar = NavigationToolbar2QT(self.canvas, self)
+        main_layout.addWidget(self.toolbar)
         main_layout.addWidget(self.canvas)
         main_layout.addWidget(input_widget)
 
@@ -144,6 +152,7 @@ class FunctionPlotter(QMainWindow):
         ax = self.figure.add_subplot(111)
         ax.plot(x, y, label=rf"${self.function_input.text()}$")
         ax.legend()
+        ax.grid()
         self.canvas.draw()
 
 
