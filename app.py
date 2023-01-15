@@ -54,7 +54,7 @@ class FunctionPlotter(QMainWindow):
 
         # regular expression to validate the input values
         self.range_re = r"^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$"
-        self.function_re = r"^[+\-*/\^%()\s0-9xX\.eE|" + MATH_FUNCTIONS + "]*$"
+        self.function_re = r"^[+\-*/\^%()\s0-9x\.eE|sin|cos|tan|exp|log|log10|sqrt|pi|e|sinh|cosh|tanh|ceil|floor|x]*$"
 
         # Input Layout for the form
         input_layout = QHBoxLayout()
@@ -113,7 +113,7 @@ class FunctionPlotter(QMainWindow):
         self.toolbar = NavigationToolbar2QT(self.canvas, self)
         main_layout.addWidget(self.toolbar)
         main_layout.addWidget(self.canvas)
-        main_layout.addWidget(input_widget)
+        main_layout.addWidget(bottom_widget)
 
         # make the central widget and set the layout
         central_widget = QWidget()
@@ -161,7 +161,7 @@ class FunctionPlotter(QMainWindow):
             except Exception as e:
                 self.error_label.setText(
                     f"Invalid Mathematical function: The input '{text}' in {line_edit_name} is not valid, "
-            )
+                )
                 self.error_label.show()
                 return
 
@@ -172,6 +172,16 @@ class FunctionPlotter(QMainWindow):
         self.validate_input(self.range_re, self.max_x_input, "Max Input")
         self.validate_input(self.range_re, self.min_x_input, "Min Input")
         self.validate_input(self.function_re, self.function_input, "Function Input")
+
+        if float(self.min_x_input.text().strip()) >= float(
+            self.max_x_input.text().strip()
+        ):
+            self.validate_input(
+                None, None, "Range Input", "Min value must be less than Max value"
+            )
+
+        if self.error_label.isVisible():
+            return
 
         # Get user input for function and range
         self.function = self.function_input.text().strip()
