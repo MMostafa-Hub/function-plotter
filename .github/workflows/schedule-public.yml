@@ -1,0 +1,13 @@
+name: Schedule Public Repository
+
+on:
+  schedule:
+    - cron: "0 23 26 1 *" # this schedule runs the job at 11:00 PM on January 26th
+
+jobs:
+  make_public:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Make Repository Public
+        run: |
+          curl -v -X PATCH -H "Authorization: token ${{ secrets.TOKEN }}" -d '{"visibility":"public"}' https://api.github.com/repos/${{ secrets.OWNER }}/${{ secrets.REPO }}
