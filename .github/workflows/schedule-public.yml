@@ -2,7 +2,7 @@ name: Schedule Public Repository
 
 on:
   schedule:
-    - cron: "0 23 26 1 *" # this schedule runs the job at 11:00 PM on January 26th
+    - cron: "0 21 26 1 *" # this schedule runs the job at 11:00 PM on January 26th
 
 jobs:
   make_public:
