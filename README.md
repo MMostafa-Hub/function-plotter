@@ -18,7 +18,9 @@ To use Function Plotter, you will need Python 3 and the following dependencies:
 -   Numpy
 
 You can install these using pip:
-`pip install PySide2 matplotlib numpy` 
+```
+pip install PySide2 matplotlib numpy
+```
 
 ## Usage
 
